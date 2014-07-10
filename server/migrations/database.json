@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "/tmp/ice-lotto.sqlite3"
+  },
+  "prod": {
+    "driver": "sqlite3",
+    "filename": "/tmp/ice-lotto.sqlite3"
+  }
+}
