@@ -23,6 +23,7 @@
     "grunt-db-migrate": "^0.2.0",
     "morgan": "^1.1.1",
     "passport": "^0.2.0",
-    "sqlite3": "^2.2.3"
+    "sqlite3": "^2.2.3",
+    "twig": "^0.7.2"
   }
 }

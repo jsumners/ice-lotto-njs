@@ -1,1 +1,7 @@
+# Node stuff
 node_modules/
+
+# IDEs & editors
+.idea
+*.swp
+*~

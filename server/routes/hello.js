@@ -1,7 +1,7 @@
 function hello(req, res) {
-  res.send('Hello world!');
+  res.render('hello', {name: 'World'});
 }
 
 module.exports = function(app) {
   app.get('/hello', hello);
-}
+};
