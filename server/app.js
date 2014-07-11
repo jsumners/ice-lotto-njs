@@ -14,9 +14,7 @@ console.dir(config);
 // Twig configuration
 app.set('view engine', 'twig');
 app.set('view options', {layout: false});
-app.set('twig options', {
-    strict_variables: false
-});
+app.set('twig options', {});
 
 function main() {
   var server = {};
