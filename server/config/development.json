@@ -1,5 +1,10 @@
 {
   "db": {
     "file": "/tmp/ice-lotto.sqlite3"
+  },
+  "session": {
+      "secret": "gurgle gurgle",
+      "resave": true,
+      "saveUninitialized": true
   }
 }
