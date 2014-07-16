@@ -1,0 +1,30 @@
+{% extends '../layout.twig' %}
+
+{% block body %}
+<p class="lead">Welcome to the ICE lottery!</p>
+  {# pricePoll goes here #}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function() {
+    var rootPath = $("meta[name=app-path]").attr("content");
+    $(".main-content").on("click", ".gw-item-icon", function () {
+      var $this = $(this),
+          $i = $this.siblings("i");
+
+      $.ajax({
+        url: rootPath + "/item/" + $i.data("id") + "/count/" + $i.data("count"),
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+          BootstrapDialog.show({
+            title: $i.data("name"),
+            message: "Chat link: " + data.linkString,
+            type: BootstrapDialog.TYPE_INFO
+          });
+        }
+      });
+    });
+  }());
+</script>
+{% endblock %}
