@@ -1,0 +1,116 @@
+body {
+  padding-bottom: 70px;
+  padding-top: 70px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.form-signin {
+  margin: 0 auto;
+  max-width: 330px;
+  padding: 15px;
+}
+
+.form-signin-heading {
+  margin-bottom: 10px;
+}
+
+.form-signin .username-field {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: -1px;
+}
+
+.form-signin .password-field {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-bottom: 10px;
+}
+
+.form-signin .new-password-field {
+  border-radius: 0;
+}
+
+.gw-item-icon {
+  border: 1px solid #ccc;
+  height: 64px;
+  width: 64px;
+}
+
+.img-sm {
+  height: 32px;
+  width: 32px;
+}
+
+.login-alert {
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+.money-draw-winner {
+  font-weight: bold;
+}
+
+.narrow-300 {
+  max-width: 300px;
+}
+
+.navbar-short {
+  min-height: 32px !important;
+}
+
+.no-background {
+  background-color: transparent;
+}
+
+.no-border {
+  border: 0;
+}
+
+.prize-pool {
+  /*border: 1px solid #000000;
+  border-collapse: collapse;*/
+}
+
+.prize-pool > .row {
+  /*margin-top: 10px;*/
+}
+
+.prize-pool-tier-row {
+  vertical-align: top;
+}
+
+.prize-pool-tier-row > td {
+  height: 81px;
+  width: 114px;
+}
+
+.prize-pool-tier-row .admin-col {
+  vertical-align: middle;
+}
+
+.search-result {
+  cursor: pointer;
+  padding: 8px;
+}
+
+.tier-won-item {
+  border-color: #F00;
+  opacity: 0.5;
+}
+
+.tt-suggestions {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  color: #555;
+  padding: 6px 12px;
+}
+
+/*
+.winner-row {
+  visibility: collapse;
+}*/
