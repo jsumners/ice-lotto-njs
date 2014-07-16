@@ -7,6 +7,7 @@ var config = require('./config'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     session = require('express-session'),
+    path = require('path'),
     twig = require('twig');
 
 var app = express(),
@@ -22,6 +23,11 @@ function main() {
   setupPassport();
 
   app.use(morgan()); // Basically equivalent to Apache HTTPD's access.log
+
+  app.use(express.static(path.join(__dirname, 'public')));
+  app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
+  app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
+
   server = app.listen(8080, function() {
     console.log('Listening on port %d', server.address().port);
   });

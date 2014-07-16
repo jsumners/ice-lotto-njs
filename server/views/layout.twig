@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+
+  <title>{% block title %}{% endblock %} ICE Lotto</title>
+
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.min.css"/>
+  <link rel="stylesheet" href="/style.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+<!--/* Site header/navbar */-->
+{% block nav %}
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+
+    <header class="navbar-header">
+      <button class="navbar-toggle" data-toggle="collapse" data-target="#header-nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Ice Lotto</a>
+    </header>
+
+    <div class="collapse navbar-collapse" id="header-nav">
+      <ul class="nav navbar-nav navbar-left">
+        <li class="dropdown">
+          <a class="clickable dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="/drawings">Drawings</a></li>
+            <li><a href="/admin/users">Users</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a class="clickable dropdown-toggle" data-toggle="dropdown">Drawings <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="/">Current</a></li>
+            <li><a href="/drawing/previous">Previous</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <p class="navbar-text navbar-right">
+        Signed in as
+        <a class="navbar-link" href="/account">
+          Foo User
+        </a>
+        (<a href="/logout" class="navbar-link">logout</a>)
+      </p>
+    </div>
+
+  </div>
+</nav>
+{% endblock %}
+
+<!--/* Main content */-->
+<!-- Thanks IE11 for not supporting the "main" element. -->
+<section class="main-content container">
+  {% block body %}{% endblock %}
+</section>
+
+{% block footer %}
+<footer class="navbar navbar-default navbar-fixed-bottom navbar-short">
+  <div class="container-fluid text-center text-muted">
+    <small>Developed by <a href="http://jrfom.com/">James Sumners</a></small>
+  </div>
+</footer>
+{% endblock %}
+
+<script src="/jquery/jquery.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -3,8 +3,9 @@
     "file": "/tmp/ice-lotto.sqlite3"
   },
   "session": {
-      "secret": "gurgle gurgle",
-      "resave": true,
-      "saveUninitialized": true
+    "name": "id",
+    "secret": "gurgle gurgle",
+    "resave": true,
+    "saveUninitialized": true
   }
 }
