@@ -1,1 +1,8 @@
+# Node stuff
+node_modules/
+
+# IDEs & editors
+.idea
 *.sublime-workspace
+*.swp
+*~
