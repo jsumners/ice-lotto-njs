@@ -2,11 +2,11 @@
 
 The ICE Lotto NodeJS Application
 
-# Requirements
+## Requirements
 
 * node.js http://nodejs.org/
 
-# Installation
+## Installation
 
 1. Clone this repository: `git clone https://github.com/jsumners/ice-lotto-njs`
 2. Install dependencies: `cd ice-lotto-njs/server && npm install`
