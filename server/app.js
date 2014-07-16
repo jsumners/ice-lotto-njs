@@ -46,9 +46,7 @@ setupViewConfig = function() {
 
 setupPassport = function() {
   //http://passportjs.org/guide/configure/
-  app.use(session(config.session));
-  app.use(passport.initialize());
-  app.use(passport.session());
+
   passport.use(new LocalStrategy(
     function(username, password, done){
       // TODO: Find user in database and verify password
@@ -62,14 +60,20 @@ setupPassport = function() {
   ));
 
   passport.serializeUser(function (user, done) {
+    console.log('-----------------serialize');
     done(null, user.id);
   });
 
   passport.deserializeUser(function (id, done) {
+    console.log('-----------------deserialize');
     // TODO: find user from id
     var user = {id: 1, username: 'user'};
     done(null, user);
-  })
+  });
+
+  app.use(session(config.session));
+  app.use(passport.initialize());
+  app.use(passport.session());
 };
 
 // Run some blocking operations and then do the main setup and launching

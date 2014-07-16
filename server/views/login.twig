@@ -1,0 +1,25 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+<form class="form-signin" role="form" action="/login" method="post">
+  <h2 class="form-signin-heading">Login
+    <small>(or <a href="/claim">claim account</a>)</small>
+  </h2>
+
+  <input class="form-control username-field" placeholder="GW2 Display Name (e.g. 'Foo.1234')" name="username"
+         required="required" autofocus="autofocus"/>
+  <input type="password" class="form-control password-field" placeholder="Password" name="password"
+         required="required"/>
+  <button class="btn btn-lg btn-primary btn-block" type="submit" data-loading-text="Logging in...">Login</button>
+
+  {#<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>#}
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $("form").on("submit", function () {
+    $("button[type=submit]").button("loading");
+  })
+</script>
+{% endblock %}
