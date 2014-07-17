@@ -92,7 +92,8 @@ dependencies.sqlite.get(
       process.exit(1);
     }
 
-    var options = dependencies.config.session;
+    var options = dependencies.config.session,
+        SqliteSessionStore = require('./core/SqliteSessionStore')(dependencies.sqlite, session);
     (function() {
       if (row !== undefined && row.data) {
         options.secret = row.data;
@@ -105,7 +106,8 @@ dependencies.sqlite.get(
       options.secret = keyBuffer.toString('hex');
     }());
 
-    console.dir(options);
+    options.store = new SqliteSessionStore(options);
+
     setupPassport(options);
     main();
   }
