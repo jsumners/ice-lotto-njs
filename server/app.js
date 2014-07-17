@@ -22,7 +22,6 @@ function main() {
 
   setupViewConfig();
   loadRoutes();
-  setupPassport();
 
   app.use(morgan()); // Basically equivalent to Apache HTTPD's access.log
 
@@ -82,7 +81,9 @@ setupPassport = function(sessionConfig) {
 dependencies.config = config(app.get('env'));
 dependencies.sqlite = new sqlite3.Database(dependencies.config.db.file);
 dependencies.sqlite.get(
-  // We'll be configuring express-session here and calling main() when it is done
+  // We'll be configuring express-session and password here.
+  // Once those essentials are configured main() is called and the app will
+  // be running.
   'select data from settings where name = "session-key"',
   function(err, row) {
     if (err) {
