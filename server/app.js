@@ -2,6 +2,7 @@
 
 var config = require('./config'),
     express = require('express'),
+    session = require('express-session'),
     morgan = require('morgan'),
     sqlite3 = require('sqlite3'),
     passport = require('passport'),
@@ -11,6 +12,7 @@ var config = require('./config'),
     twig = require('twig');
 
 var app = express(),
+    dependencies = {},
     loadRoutes = function(){},
     setupViewConfig = function(){},
     setupPassport = function(){};
@@ -44,7 +46,7 @@ setupViewConfig = function() {
   app.set('twig options', {});
 };
 
-setupPassport = function() {
+setupPassport = function(sessionConfig) {
   //http://passportjs.org/guide/configure/
 
   passport.use(new LocalStrategy(
@@ -71,12 +73,39 @@ setupPassport = function() {
     done(null, user);
   });
 
-  app.use(session(config.session));
+  app.use(session(sessionConfig));
   app.use(passport.initialize());
   app.use(passport.session());
 };
 
 // Run some blocking operations and then do the main setup and launching
-config = config(app.get('env'));
-app.set('db', new sqlite3.Database(config.db.file));
-main();
+dependencies.config = config(app.get('env'));
+dependencies.sqlite = new sqlite3.Database(dependencies.config.db.file);
+dependencies.sqlite.get(
+  // We'll be configuring express-session here and calling main() when it is done
+  'select data from settings where name = "session-key"',
+  function(err, row) {
+    if (err) {
+      console.log('Could not read settings from database!');
+      console.log(err);
+      process.exit(1);
+    }
+
+    var options = dependencies.config.session;
+    (function() {
+      if (row !== undefined && row.data) {
+        options.secret = row.data;
+        return;
+      }
+
+      var crypto = require('crypto'),
+          keyBuffer = crypto.randomBytes(48);
+
+      options.secret = keyBuffer.toString('hex');
+    }());
+
+    console.dir(options);
+    setupPassport(options);
+    main();
+  }
+);
