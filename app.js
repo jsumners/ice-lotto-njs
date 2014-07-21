@@ -29,9 +29,13 @@ function main() {
   app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
   app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
 
-  server = app.listen(8080, function() {
-    console.log('Listening on port %d', server.address().port);
-  });
+  server = app.listen(
+    dependencies.config.network.port,
+    dependencies.config.network.ip,
+    function() {
+      console.log('Server URI = http://%s:%d', server.address().address, server.address().port);
+    }
+  );
 }
 
 loadRoutes = function() {

@@ -2,6 +2,10 @@
   "db": {
     "file": "/tmp/ice-lotto.sqlite3"
   },
+  "network": {
+    "ip": "127.0.0.1",
+    "port": 8080
+  },
   "session": {
     "name": "id",
     "secret": "gurgle gurgle",

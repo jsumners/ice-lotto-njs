@@ -16,6 +16,9 @@
     "url": "https://github.com/jsumners/ice-lotto-njs/issues"
   },
   "homepage": "https://github.com/jsumners/ice-lotto-njs",
+  "engines": {
+    "node": "^0.10.24"
+  },
   "dependencies": {
     "bootstrap": "^3.2.0",
     "db-migrate": "^0.6.4",
