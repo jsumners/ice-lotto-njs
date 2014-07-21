@@ -1,4 +1,5 @@
 {
+  "dataDir": "/tmp/ice-lotto/",
   "db": {
     "file": "/tmp/ice-lotto.sqlite3"
   },
