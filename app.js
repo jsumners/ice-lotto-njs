@@ -1,8 +1,9 @@
 'use strict';
 
-var config = require('./config'),
-    express = require('express'),
+// Third-party imports
+var express = require('express'),
     session = require('express-session'),
+    bodyParser = require('body-parser'),
     morgan = require('morgan'),
     sqlite3 = require('sqlite3'),
     passport = require('passport'),
@@ -11,6 +12,11 @@ var config = require('./config'),
     path = require('path'),
     twig = require('twig');
 
+// Local imports
+var Authenticator = require('./core/Authenticator'),
+    config = require('./config');
+
+// Local variables
 var app = express(),
     dependencies = {},
     loadRoutes = function(){},
@@ -19,6 +25,13 @@ var app = express(),
 
 function main() {
   var server = {};
+
+  // Requests are passed through the app.use stuff in order. So we need to parse
+  // any message bodies before we try to do anything with them.
+  // parse application/x-www-form-urlencoded
+  app.use(bodyParser.urlencoded({ extended: false }));
+  // parse application/json
+  app.use(bodyParser.json());
 
   setupViewConfig();
   loadRoutes();
@@ -54,13 +67,17 @@ setupPassport = function(sessionConfig) {
 
   passport.use(new LocalStrategy(
     function(username, password, done){
-      // TODO: Find user in database and verify password
-      var user = {id: 1, username: username};
-      if (!user) { // || !verifyPassword(user, password)
-        done(null, false, {message: 'Incorrect Credentials'});
-        return;
-      }
-      done(null, user);
+      var authenticator = new Authenticator(dependencies.sqlite),
+          user = {id: 1, username: username};
+
+      authenticator.validate(username, password, function(err) {
+        if (err) {
+          done(null, false, {message: err});
+          return;
+        }
+
+        done(null, user);
+      });
     }
   ));
 
@@ -79,6 +96,7 @@ setupPassport = function(sessionConfig) {
   app.use(session(sessionConfig));
   app.use(passport.initialize());
   app.use(passport.session());
+  app.set('passport', passport);
 };
 
 // Run some blocking operations and then do the main setup and launching
