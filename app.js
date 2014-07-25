@@ -36,7 +36,7 @@ function main() {
   setupViewConfig();
   loadRoutes();
 
-  app.use(morgan()); // Basically equivalent to Apache HTTPD's access.log
+  app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
 
   app.use(express.static(path.join(__dirname, 'public')));
   app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
@@ -64,13 +64,11 @@ setupViewConfig = function() {
 
 setupPassport = function(sessionConfig) {
   //http://passportjs.org/guide/configure/
+  var authenticator = new Authenticator(dependencies.sqlite);
 
   passport.use(new LocalStrategy(
     function(username, password, done){
-      var authenticator = new Authenticator(dependencies.sqlite),
-          user = {id: 1, username: username};
-
-      authenticator.validate(username, password, function(err) {
+      authenticator.validate(username, password, function(err, user) {
         if (err) {
           done(null, false, {message: err});
           return;
@@ -82,15 +80,11 @@ setupPassport = function(sessionConfig) {
   ));
 
   passport.serializeUser(function (user, done) {
-    console.log('-----------------serialize');
     done(null, user.id);
   });
 
   passport.deserializeUser(function (id, done) {
-    console.log('-----------------deserialize');
-    // TODO: find user from id
-    var user = {id: 1, username: 'user'};
-    done(null, user);
+    authenticator.retrieveUser(id, done);
   });
 
   app.use(session(sessionConfig));

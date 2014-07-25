@@ -33,18 +33,21 @@ var Authenticator = function(sqlite) {
    */
   obj.validate = function(username, password, callback) {
     sqlite.get(
-      'select password from users where gw2display_name = ?',
+      'select id, password from users where gw2display_name = ?',
       username,
       function(err, row) {
         if (err) {
           callback(err);
           return;
         }
+        if (row === undefined) {
+          callback('Credentials do not match'); // user doesn't exists
+        }
 
         if (!bcrypt.compareSync(password, row.password)) {
           callback('Credentials do not match');
         } else {
-          callback(null);
+          callback(null, {id: row.id, username: username});
         }
       }
     );
@@ -53,6 +56,21 @@ var Authenticator = function(sqlite) {
   obj.encryptPassword = function(password) {
     var salt = bcrypt.genSaltSync(13);
     return bcrypt.hashSync(password, salt);
+  };
+
+  obj.retrieveUser = function(id, callback) {
+    sqlite.get(
+      'select id, password from users where id = ?',
+      id,
+      function(err, row) {
+        if (err) {
+          callback(err);
+          return;
+        }
+        // TODO: what to do if row === undefined?
+        callback(null, row);
+      }
+    );
   };
 
   return obj;
