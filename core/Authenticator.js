@@ -41,13 +41,13 @@ var Authenticator = function(sqlite) {
           return;
         }
         if (row === undefined) {
-          callback('Credentials do not match'); // user doesn't exists
+          callback('Credentials do not match'); // user doesn't exist
         }
 
         if (!bcrypt.compareSync(password, row.password)) {
           callback('Credentials do not match');
         } else {
-          callback(null, {id: row.id, username: username});
+          callback(null, row.id);
         }
       }
     );
@@ -60,7 +60,7 @@ var Authenticator = function(sqlite) {
 
   obj.retrieveUser = function(id, callback) {
     sqlite.get(
-      'select id, password from users where id = ?',
+      'select id, gw2display_name from users where id = ?',
       id,
       function(err, row) {
         if (err) {

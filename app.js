@@ -79,8 +79,8 @@ setupPassport = function(sessionConfig) {
     }
   ));
 
-  passport.serializeUser(function (user, done) {
-    done(null, user.id);
+  passport.serializeUser(function (id, done) {
+    done(null, id);
   });
 
   passport.deserializeUser(function (id, done) {
