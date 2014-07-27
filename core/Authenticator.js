@@ -58,21 +58,6 @@ var Authenticator = function(sqlite) {
     return bcrypt.hashSync(password, salt);
   };
 
-  obj.retrieveUser = function(id, callback) {
-    sqlite.get(
-      'select id, gw2display_name from users where id = ?',
-      id,
-      function(err, row) {
-        if (err) {
-          callback(err);
-          return;
-        }
-        // TODO: what to do if row === undefined?
-        callback(null, row);
-      }
-    );
-  };
-
   return obj;
 };
 

@@ -19,12 +19,16 @@ var Authenticator = require('./core/Authenticator'),
 // Local variables
 var app = express(),
     dependencies = {},
+    addDependencies = function(){},
     loadRoutes = function(){},
     setupViewConfig = function(){},
     setupPassport = function(){};
 
 function main() {
   var server = {};
+
+  // Setup our remaining local dependencies.
+  addDependencies();
 
   // Requests are passed through the app.use stuff in order. So we need to parse
   // any message bodies before we try to do anything with them.
@@ -50,6 +54,12 @@ function main() {
     }
   );
 }
+
+addDependencies = function() {
+  var userDao = require('./dao/UserDao')(dependencies.sqlite);
+
+  dependencies.userDao = userDao;
+};
 
 loadRoutes = function() {
   require('./routes')(app);
@@ -84,7 +94,8 @@ setupPassport = function(sessionConfig) {
   });
 
   passport.deserializeUser(function (id, done) {
-    authenticator.retrieveUser(id, done);
+    // TODO: cache result so we don't hit the database for every request
+    dependencies.userDao.findOneById(id, done);
   });
 
   app.use(session(sessionConfig));
