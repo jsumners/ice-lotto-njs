@@ -2,6 +2,7 @@
 
 function login(req, res) {
   if (req.user) {
+    // TODO: handle the case when `req.user.isEnabled() === false`
     res.redirect('/');
   }
   res.render('login');
