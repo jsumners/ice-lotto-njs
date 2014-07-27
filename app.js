@@ -117,9 +117,13 @@ dependencies.sqlite.get(
       }
 
       var crypto = require('crypto'),
-          keyBuffer = crypto.randomBytes(48);
+          keyBuffer = crypto.randomBytes(48),
+          stmt = dependencies.sqlite.prepare(
+            'insert or replace into settings (name, data) values ("session-key", ?)'
+          );
 
       options.secret = keyBuffer.toString('hex');
+      stmt.run(options.secret);
     }());
 
     options.store = new SqliteSessionStore(options);
