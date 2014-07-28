@@ -1,0 +1,24 @@
+{
+  "environments": {
+    "dev": {
+      "file": {
+        "level": "debug",
+        "filename": "/tmp/ice-lotto/logs/dev.log"
+      },
+      "console": {
+        "level": "debug"
+      }
+    },
+    "prod": {
+      "file": {
+        "level": "info",
+        "filename": "ice-lotto.log"
+      }
+    }
+  },
+  "general": {
+    "colorize": true,
+    "prettyPrint": true,
+    "timestamp": true
+  }
+}

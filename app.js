@@ -14,7 +14,8 @@ var express = require('express'),
 
 // Local imports
 var Authenticator = require('./core/Authenticator'),
-    config = require('./config');
+    config = require('./config'),
+    log = require('./core/logger')();
 
 // Local variables
 var app = express(),
@@ -24,7 +25,11 @@ var app = express(),
     setupViewConfig = function(){},
     setupPassport = function(){};
 
+log.info('Application starting ...');
+
 function main() {
+  log.debug('Entering main ...');
+  log.debug('config => ', dependencies.config);
   var server = {};
 
   // Setup our remaining local dependencies.
@@ -46,26 +51,30 @@ function main() {
   app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
   app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
 
+  log.info('Starting web server ...');
   server = app.listen(
     dependencies.config.network.port,
     dependencies.config.network.ip,
     function() {
-      console.log('Server URI = http://%s:%d', server.address().address, server.address().port);
+      log.info('Server URI = http://%s:%d', server.address().address, server.address().port);
     }
   );
 }
 
 addDependencies = function() {
+  log.debug('Adding remaining dependencies ...');
   var userDao = require('./dao/UserDao')(dependencies.sqlite);
 
   dependencies.userDao = userDao;
 };
 
 loadRoutes = function() {
+  log.debug('Loading routes ...');
   require('./routes')(app);
 };
 
 setupViewConfig = function() {
+  log.debug('Configuring view module ...');
   // Twig configuration
   app.set('view engine', 'twig');
   app.set('view options', {layout: false});
@@ -73,6 +82,7 @@ setupViewConfig = function() {
 };
 
 setupPassport = function(sessionConfig) {
+  log.debug('Configuring passport ...');
   //http://passportjs.org/guide/configure/
   var authenticator = new Authenticator(dependencies.sqlite);
 
@@ -113,6 +123,7 @@ dependencies.sqlite.get(
   // be running.
   'select data from settings where name = "session-key"',
   function(err, row) {
+    log.debug('Session key fetched ... ', row);
     if (err) {
       console.log('Could not read settings from database!');
       console.log(err);

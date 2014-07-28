@@ -29,6 +29,5 @@ module.exports = function(env) {
     fs.mkdirSync(config.dataDir);
   }
 
-  console.log('config => ', config);
   return config;
 };

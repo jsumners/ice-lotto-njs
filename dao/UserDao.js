@@ -1,6 +1,7 @@
 'use strict';
 
-var User = require('../models/User');
+var User = require('../models/User'),
+    log = require('../core/logger')();
 
 function UserDao(sqlite) {
   if (!(this instanceof UserDao)) {
@@ -59,7 +60,7 @@ UserDao.prototype = {
  * retrieved.
  */
 UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
-  console.log('UserDao#findOneByGw2DisplayName => ', gw2DisplayName);
+  log.debug('UserDao#findOneByGw2DisplayName => ', gw2DisplayName);
   var self = this.self;
 
   this.sqlite.get(
@@ -84,7 +85,7 @@ UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
  * retrieved.
  */
 UserDao.prototype.findOneById = function(id, callback) {
-  console.log('UserDao#findOneById => ', id);
+  log.debug('UserDao#findOneById => ', id);
   var self = this.self;
 
   this.sqlite.get(

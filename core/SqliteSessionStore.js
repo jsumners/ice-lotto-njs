@@ -1,5 +1,7 @@
 'use strict';
 
+var log = require('./logger')();
+
 var sqliteSessionStore = function(sqlite, session) {
   var SqliteStore = function(){},
       db = sqlite,
@@ -30,7 +32,7 @@ var sqliteSessionStore = function(sqlite, session) {
       sid,
       function (err) {
         if (err) {
-          console.log('Could not delete session with sid = `%s`', sid);
+          log.error('Could not delete session with sid = `%s`', sid);
           cb(err);
           return;
         }
@@ -46,7 +48,7 @@ var sqliteSessionStore = function(sqlite, session) {
       sid,
       function (err, row) {
         if (err) {
-          console.log('Could not find session with sid = `%s`', sid);
+          log.error('Could not find session with sid = `%s`', sid);
           cb(err);
           return;
         }
@@ -54,8 +56,8 @@ var sqliteSessionStore = function(sqlite, session) {
         if (row && row.data) {
           cb(null, JSON.parse(row.data));
         } else {
-          console.log('Session data missing: `%s`', sid);
-          console.dir(row);
+          log.error('Session data missing: `%s`', sid);
+          log.debug(row);
           // TODO: figure out how to recreate the session if the store gets wiped
           cb('Missing session');
         }
@@ -71,8 +73,8 @@ var sqliteSessionStore = function(sqlite, session) {
       [sid, data],
       function (err) {
         if (err) {
-          console.log('Could not store session data for sid = `%s`', sid);
-          console.log(err);
+          log.error('Could not store session data for sid = `%s`', sid);
+          log.error(err);
           cb(err);
           return;
         }
