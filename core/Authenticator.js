@@ -42,6 +42,7 @@ var Authenticator = function(sqlite) {
         }
         if (row === undefined) {
           callback('Credentials do not match'); // user doesn't exist
+          return;
         }
 
         if (!bcrypt.compareSync(password, row.password)) {
