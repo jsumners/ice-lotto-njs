@@ -27,6 +27,7 @@ var Authenticator = rootRequire('core/Authenticator'),
 // Local variables
 var app = express(),
     dependencies = {},
+    sessionOptions = {},
     addDependencies = function(){},
     loadRoutes = function(){},
     setupViewConfig = function(){},
@@ -42,6 +43,15 @@ function main() {
   // Setup our remaining local dependencies.
   addDependencies();
 
+  app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
+
+  // Static resources should be served before we start hitting the database
+  // or any other type of dynamic routes.
+  // TODO: look at using another router specifically for static resources and maybe one for static admin (authed) resources
+  app.use(express.static(path.join(__dirname, 'public')));
+  app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
+  app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
+
   // Requests are passed through the app.use stuff in order. So we need to parse
   // any message bodies before we try to do anything with them.
   // parse application/x-www-form-urlencoded
@@ -49,14 +59,12 @@ function main() {
   // parse application/json
   app.use(bodyParser.json());
 
+  // Now we configure Passport so it can be used to authenticate any requests
+  // beyond this point.
+  setupPassport(sessionOptions);
+
   setupViewConfig();
   loadRoutes();
-
-  app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
-
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
-  app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
 
   log.info('Starting web server ...');
   server = app.listen(
@@ -111,7 +119,6 @@ setupPassport = function(sessionConfig) {
   });
 
   passport.deserializeUser(function (id, done) {
-    // TODO: cache result so we don't hit the database for every request
     dependencies.userDao.findOneById(id, done);
   });
 
@@ -156,8 +163,8 @@ dependencies.sqlite.get(
     }());
 
     options.store = new SqliteSessionStore(options);
+    sessionOptions = options;
 
-    setupPassport(options);
     main();
   }
 );
