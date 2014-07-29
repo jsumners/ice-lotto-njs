@@ -1,7 +1,7 @@
 'use strict';
 
-var User = require('../models/User'),
-    log = require('../core/logger')();
+var User = rootRequire('models/User'),
+    log = rootRequire('core/logger')();
 
 function UserDao(sqlite) {
   if (!(this instanceof UserDao)) {

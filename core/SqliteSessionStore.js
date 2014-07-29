@@ -1,6 +1,6 @@
 'use strict';
 
-var log = require('./logger')();
+var log = rootRequire('core/logger')();
 
 var sqliteSessionStore = function(sqlite, session) {
   var SqliteStore = function(){},

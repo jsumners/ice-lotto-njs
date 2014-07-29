@@ -1,5 +1,5 @@
 {
-  "predef": [],
+  "predef": ["rootRequire"],
   "camelcase": true,
   "curly": true,
   "eqeqeq": true,

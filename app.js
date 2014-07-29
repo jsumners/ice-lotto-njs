@@ -1,5 +1,12 @@
 'use strict';
 
+// A hack so that we can require modules from the root
+// of the application instead of using relative paths.
+// https://gist.github.com/branneman/8048520
+global.rootRequire = function(name) {
+    return require(__dirname + '/' + name);
+};
+
 // Third-party imports
 var express = require('express'),
     session = require('express-session'),
@@ -13,9 +20,9 @@ var express = require('express'),
     twig = require('twig');
 
 // Local imports
-var Authenticator = require('./core/Authenticator'),
+var Authenticator = rootRequire('core/Authenticator'),
     config = require('./config'),
-    log = require('./core/logger')();
+    log = rootRequire('core/logger')();
 
 // Local variables
 var app = express(),
