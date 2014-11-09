@@ -113,10 +113,12 @@ Logger.prototype = {
  *
  * @returns {Logger}
  */
-module.exports = function(){
+exports = module.exports = function() {
   if (!logger) {
     logger = new Logger();
   }
 
   return logger.logger;
 };
+
+exports['@singleton'] = true;

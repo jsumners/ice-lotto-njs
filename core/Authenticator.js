@@ -1,16 +1,12 @@
 'use strict';
 
-var Authenticator = function(sqlite) {
+var Authenticator = function(db) {
   var bcrypt = require('bcrypt');
   var self = this,
       obj = {};
 
   if (!(this instanceof Authenticator)) {
-    return new Authenticator(sqlite);
-  }
-
-  if (!sqlite || sqlite.toString().indexOf("Database") === -1) {
-    throw new Error('Need an instance of Sqlite3 to lookup credentials!');
+    return new Authenticator(db);
   }
 
   /**
@@ -32,23 +28,23 @@ var Authenticator = function(sqlite) {
    * @param {validateCallback} callback Function to call when validation is complete
    */
   obj.validate = function(username, password, callback) {
-    sqlite.get(
+    db.query(
       'select id, password from users where gw2display_name = ?',
-      username,
-      function(err, row) {
+      [username],
+      function(err, results) {
         if (err) {
           callback(err);
           return;
         }
-        if (row === undefined) {
+        if (results.rows.length === 0) {
           callback('Credentials do not match'); // user doesn't exist
           return;
         }
 
-        if (!bcrypt.compareSync(password, row.password)) {
+        if (!bcrypt.compareSync(password, results.rows[0].password)) {
           callback('Credentials do not match');
         } else {
-          callback(null, row.id);
+          callback(null, results.rows[0].id);
         }
       }
     );
@@ -62,4 +58,9 @@ var Authenticator = function(sqlite) {
   return obj;
 };
 
-module.exports = Authenticator;
+exports = module.exports = function(db) {
+  return new Authenticator(db);
+};
+
+exports['@require'] = [ 'database' ];
+exports['@singleton'] = true;

@@ -1,15 +1,14 @@
 'use strict';
 
-var User = rootRequire('models/User'),
-    log = rootRequire('core/logger')();
+var log = {};
 
-function UserDao(sqlite) {
+function UserDao(db, user) {
   if (!(this instanceof UserDao)) {
-    return new UserDao(sqlite);
+    return new UserDao(db);
   }
 
   this.self = this;
-  this.sqlite = sqlite;
+  this.db = db;
 
   this.self.buildUser = function(row) {
     var user = new User();
@@ -36,11 +35,11 @@ UserDao.prototype = {
     this._self = self;
   },
 
-  get sqlite() {
-    return this._sqlite;
+  get db() {
+    return this._db;
   },
-  set sqlite(sqlite) {
-    this._sqlite = sqlite;
+  set db(db) {
+    this._db = db;
   }
 };
 
@@ -63,7 +62,7 @@ UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
   log.debug('UserDao#findOneByGw2DisplayName => ', gw2DisplayName);
   var self = this.self;
 
-  this.sqlite.get(
+  this.db.get(
     'select * from users where gw2display_name = ?',
     gw2DisplayName,
     function(err, row) {
@@ -88,7 +87,7 @@ UserDao.prototype.findOneById = function(id, callback) {
   log.debug('UserDao#findOneById => ', id);
   var self = this.self;
 
-  this.sqlite.get(
+  this.db.get(
     'select * from users where id = ?',
     id,
     function(err, row) {
@@ -108,10 +107,9 @@ UserDao.prototype.findOneById = function(id, callback) {
  * @param {Sqlite3} sqlite An instance of {@link Sqlite3} for retrieving data.
  * @returns {UserDao}
  */
-module.exports = function(sqlite) {
-  if (!sqlite || sqlite.toString().indexOf('Database') === -1) {
-    throw new Error('Must supply and instance of Sqlite3 to use this module');
-  }
-
-  return new UserDao(sqlite);
+exports = module.exports = function(db, logger, user) {
+  log = logger;
+  return new UserDao(db, user);
 };
+
+exports['@require'] = ['database', 'logger', 'models/user' ];

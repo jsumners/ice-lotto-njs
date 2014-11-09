@@ -8,26 +8,27 @@ global.rootRequire = function(name) {
 };
 
 // Third-party imports
-var express = require('express'),
-    session = require('express-session'),
+var ioc = require('electrolyte'),
+    express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    sqlite3 = require('sqlite3'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
-    session = require('express-session'),
     path = require('path'),
     twig = require('twig');
 
+// Configure the DI container with imports in processing order
+ioc.loader('', ioc.node('core')); // Core imports
+ioc.loader('models', ioc.node('models'));
+ioc.loader('dao', ioc.node('daa'));
+
 // Local imports
-var Authenticator = rootRequire('core/Authenticator'),
-    config = require('./config'),
-    log = rootRequire('core/logger')();
+var config = ioc.create('settings'),
+    log = ioc.create('logger');
 
 // Local variables
 var app = express(),
     dependencies = {},
-    sessionOptions = {},
     addDependencies = function(){},
     loadRoutes = function(){},
     setupViewConfig = function(){},
@@ -37,7 +38,7 @@ log.info('Application starting ...');
 
 function main() {
   log.debug('Entering main ...');
-  log.debug('config => ', dependencies.config);
+  log.debug('config => ', config);
   var server = {};
 
   // Setup our remaining local dependencies.
@@ -61,19 +62,19 @@ function main() {
 
   // Now we configure Passport so it can be used to authenticate any requests
   // beyond this point.
-  setupPassport(sessionOptions);
+  setupPassport(function() {
+    setupViewConfig();
+    loadRoutes();
 
-  setupViewConfig();
-  loadRoutes();
-
-  log.info('Starting web server ...');
-  server = app.listen(
-    dependencies.config.network.port,
-    dependencies.config.network.ip,
-    function() {
-      log.info('Server URI = http://%s:%d', server.address().address, server.address().port);
-    }
-  );
+    log.info('Starting web server ...');
+    server = app.listen(
+      config.network.port,
+      config.network.ip,
+      function() {
+        log.info('Server URI = http://%s:%d', server.address().address, server.address().port);
+      }
+    );
+  });
 }
 
 addDependencies = function() {
@@ -96,10 +97,10 @@ setupViewConfig = function() {
   app.set('twig options', {});
 };
 
-setupPassport = function(sessionConfig) {
+setupPassport = function(cb) {
   log.debug('Configuring passport ...');
   //http://passportjs.org/guide/configure/
-  var authenticator = new Authenticator(dependencies.sqlite);
+  var authenticator = ioc.create('authenticator');
 
   passport.use(new LocalStrategy(
     function(username, password, done){
@@ -122,49 +123,17 @@ setupPassport = function(sessionConfig) {
     dependencies.userDao.findOneById(id, done);
   });
 
-  app.use(session(sessionConfig));
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.set('passport', passport);
+  var LocalSession = ioc.create('session/session'),
+      localSession = new LocalSession();
+  localSession.init(function(session) {
+    log.debug('Adding passport to express server');
+    app.use(session);
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.set('passport', passport);
+
+    cb();
+  });
 };
 
-// Run some blocking operations and then do the main setup and launching
-dependencies.config = config(app.get('env'));
-dependencies.sqlite = new sqlite3.Database(dependencies.config.db.file);
-dependencies.sqlite.get(
-  // We'll be configuring express-session and password here.
-  // Once those essentials are configured main() is called and the app will
-  // be running.
-  'select data from settings where name = "session-key"',
-  function(err, row) {
-    log.debug('Session key fetched ... ', row);
-    if (err) {
-      console.log('Could not read settings from database!');
-      console.log(err);
-      process.exit(1);
-    }
-
-    var options = dependencies.config.session,
-        SqliteSessionStore = require('./core/SqliteSessionStore')(dependencies.sqlite, session);
-    (function() {
-      if (row !== undefined && row.data) {
-        options.secret = row.data;
-        return;
-      }
-
-      var crypto = require('crypto'),
-          keyBuffer = crypto.randomBytes(48),
-          stmt = dependencies.sqlite.prepare(
-            'insert or replace into settings (name, data) values ("session-key", ?)'
-          );
-
-      options.secret = keyBuffer.toString('hex');
-      stmt.run(options.secret);
-    }());
-
-    options.store = new SqliteSessionStore(options);
-    sessionOptions = options;
-
-    main();
-  }
-);
+main();

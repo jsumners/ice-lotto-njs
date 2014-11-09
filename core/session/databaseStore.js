@@ -1,35 +1,31 @@
 'use strict';
 
-var log = rootRequire('core/logger')();
+var log = {},
+    session = require('express-session');
 
-var sqliteSessionStore = function(sqlite, session) {
-  var SqliteStore = function(){},
-      db = sqlite,
+function DatabaseSessionStore(db) {
+  var DatabaseStore = function(){},
       Store = session.Store;
 
-  if (sqlite === undefined || sqlite === null || sqlite.toString().indexOf("Database") === -1) {
-    throw new Error('Cannot create SqliteSessionStore without sqlite database instance');
+  if (! (this instanceof DatabaseSessionStore)) {
+    return new DatabaseSessionStore(db);
   }
 
-  if (session === undefined || session === null || session.toString().indexOf("Session") === -1) {
-    throw new Error('Cannot create SqliteSessionStore without Express Session instance');
-  }
-
-  SqliteStore = function(options) {
-    if (!(this instanceof SqliteStore)) {
-      return new SqliteStore(options);
+  DatabaseStore = function() {
+    if (!(this instanceof DatabaseStore)) {
+      return new DatabaseStore();
     }
 
-    Store.call(this, options);
+    Store.call(this, {});
   };
 
   // Inherit from the Express Session object
-  SqliteStore.prototype = new Store();
+  DatabaseStore.prototype = new Store();
 
-  SqliteStore.prototype.destroy = function (sid, cb) {
-    db.run(
+  DatabaseStore.prototype.destroy = function (sid, cb) {
+    db.query(
       'delete from sessions where id = ?',
-      sid,
+      [sid],
       function (err) {
         if (err) {
           log.error('Could not delete session with sid = `%s`', sid);
@@ -42,10 +38,10 @@ var sqliteSessionStore = function(sqlite, session) {
     );
   };
 
-  SqliteStore.prototype.get = function (sid, cb) {
-    db.get(
+  DatabaseStore.prototype.get = function (sid, cb) {
+    db.query(
       'select * from sessions where id = ?',
-      sid,
+      [sid],
       function (err, row) {
         if (err) {
           log.error('Could not find session with sid = `%s`', sid);
@@ -65,10 +61,10 @@ var sqliteSessionStore = function(sqlite, session) {
     );
   };
 
-  SqliteStore.prototype.set = function (sid, sess, cb) {
+  DatabaseStore.prototype.set = function (sid, sess, cb) {
     // TODO: deal with a expiration time
     var data = JSON.stringify(sess);
-    db.run(
+    db.query(
       'insert or replace into sessions (id, data) values (?, ?)',
       [sid, data],
       function (err) {
@@ -86,9 +82,13 @@ var sqliteSessionStore = function(sqlite, session) {
     );
   };
 
-  return SqliteStore;
+  return DatabaseStore;
 };
 
-module.exports = function(sqlite, session) {
-  return sqliteSessionStore(sqlite, session);
+exports = module.exports = function(db, logger) {
+  log = logger;
+  return new DatabaseSessionStore(db);
 };
+
+exports['@require'] = [ 'database', 'logger' ];
+exports['@singleton'] = true;

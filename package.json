@@ -20,11 +20,14 @@
     "node": "^0.10.24"
   },
   "dependencies": {
+    "any-db": "^2.1.0",
+    "any-db-sqlite3": "^2.1.4",
     "async": "^0.9.0",
     "bcrypt": "^0.7.8",
     "body-parser": "^1.5.0",
     "bootstrap": "^3.2.0",
     "db-migrate": "^0.6.4",
+    "electrolyte": "0.0.6",
     "express": "^4.5.1",
     "express-session": "^1.6.5",
     "grunt": "^0.4.5",

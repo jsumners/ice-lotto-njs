@@ -1,7 +1,14 @@
 {
   "dataDir": "/tmp/ice-lotto/",
   "db": {
-    "file": "/tmp/ice-lotto.sqlite3"
+    "url": {
+      "adapter": "sqlite3",
+      "database": "/tmp/ice-lotto.sqlite3"
+    },
+    "poolOptions": {
+      "min": 1,
+      "max": 20
+    }
   },
   "network": {
     "ip": "127.0.0.1",
