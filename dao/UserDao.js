@@ -62,16 +62,16 @@ UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
   log.debug('UserDao#findOneByGw2DisplayName => ', gw2DisplayName);
   var self = this.self;
 
-  this.db.get(
+  this.db.query(
     'select * from users where gw2display_name = ?',
-    gw2DisplayName,
-    function(err, row) {
-      if (err || row === undefined) {
+    [gw2DisplayName],
+    function(err, results) {
+      if (err || results.rows.length === 0) {
         callback(err);
         return;
       }
 
-      callback(null, self.buildUser(row));
+      callback(null, self.buildUser(results.rows[0]));
     }
   );
 };
@@ -87,16 +87,16 @@ UserDao.prototype.findOneById = function(id, callback) {
   log.debug('UserDao#findOneById => ', id);
   var self = this.self;
 
-  this.db.get(
+  this.db.query(
     'select * from users where id = ?',
-    id,
-    function(err, row) {
-      if (err || row === undefined) {
+    [id],
+    function(err, results) {
+      if (err || results.rows.length === 0) {
         callback(err);
         return;
       }
 
-      callback(null, self.buildUser(row));
+      callback(null, self.buildUser(results.rows[0]));
     }
   );
 };
