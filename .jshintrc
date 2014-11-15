@@ -14,5 +14,7 @@
   "unused": true,
   "strict": true,
   "globalstrict": true,
-  "node": true
+  "node": true,
+  "esnext": true,
+  "es5": true
 }
