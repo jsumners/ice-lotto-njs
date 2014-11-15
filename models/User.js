@@ -188,4 +188,13 @@ User.prototype.isEnabled = function() {
   return this.enabled;
 };
 
-module.exports = User;
+/**
+ * Returns the User constructor function.
+ *
+ * @type {User}
+ */
+exports = module.exports = function() {
+  return User;
+};
+
+exports['@singleton'] = true;

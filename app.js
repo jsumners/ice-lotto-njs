@@ -1,12 +1,5 @@
 'use strict';
 
-// A hack so that we can require modules from the root
-// of the application instead of using relative paths.
-// https://gist.github.com/branneman/8048520
-global.rootRequire = function(name) {
-    return require(__dirname + '/' + name);
-};
-
 // Third-party imports
 var ioc = require('electrolyte'),
     express = require('express'),
@@ -20,7 +13,7 @@ var ioc = require('electrolyte'),
 // Configure the DI container with imports in processing order
 ioc.loader('', ioc.node('core')); // Core imports
 ioc.loader('models', ioc.node('models'));
-ioc.loader('dao', ioc.node('daa'));
+ioc.loader('dao', ioc.node('dao'));
 
 // Local imports
 var config = ioc.create('settings'),
@@ -28,8 +21,6 @@ var config = ioc.create('settings'),
 
 // Local variables
 var app = express(),
-    dependencies = {},
-    addDependencies = function(){},
     loadRoutes = function(){},
     setupViewConfig = function(){},
     setupPassport = function(){};
@@ -40,9 +31,6 @@ function main() {
   log.debug('Entering main ...');
   log.debug('config => ', config);
   var server = {};
-
-  // Setup our remaining local dependencies.
-  addDependencies();
 
   app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
 
@@ -77,13 +65,6 @@ function main() {
   });
 }
 
-addDependencies = function() {
-  log.debug('Adding remaining dependencies ...');
-  var userDao = require('./dao/UserDao')(dependencies.sqlite);
-
-  dependencies.userDao = userDao;
-};
-
 loadRoutes = function() {
   log.debug('Loading routes ...');
   require('./routes')(app);
@@ -100,10 +81,11 @@ setupViewConfig = function() {
 setupPassport = function(cb) {
   log.debug('Configuring passport ...');
   //http://passportjs.org/guide/configure/
-  var authenticator = ioc.create('authenticator');
+  var authenticator = ioc.create('authenticator'),
+      userDao = ioc.create('dao/UserDao');
 
   passport.use(new LocalStrategy(
-    function(username, password, done){
+    function strategyAuthenticator(username, password, done) {
       authenticator.validate(username, password, function(err, user) {
         if (err) {
           done(null, false, {message: err});
@@ -115,12 +97,12 @@ setupPassport = function(cb) {
     }
   ));
 
-  passport.serializeUser(function (id, done) {
+  passport.serializeUser(function userSerializer(id, done) {
     done(null, id);
   });
 
-  passport.deserializeUser(function (id, done) {
-    dependencies.userDao.findOneById(id, done);
+  passport.deserializeUser(function userDeserializer(id, done) {
+    userDao.findOneById(id, done);
   });
 
   var LocalSession = ioc.create('session/session'),

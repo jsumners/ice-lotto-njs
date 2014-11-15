@@ -1,14 +1,17 @@
 'use strict';
 
-var log = {};
+var ioc = require('electrolyte');
 
-function UserDao(db, user) {
+var db = {},
+    log = function(){},
+    User = ioc.create('models/User');
+
+function UserDao() {
   if (!(this instanceof UserDao)) {
-    return new UserDao(db);
+    return new UserDao();
   }
 
   this.self = this;
-  this.db = db;
 
   this.self.buildUser = function(row) {
     var user = new User();
@@ -33,13 +36,6 @@ UserDao.prototype = {
   },
   set self(self) {
     this._self = self;
-  },
-
-  get db() {
-    return this._db;
-  },
-  set db(db) {
-    this._db = db;
   }
 };
 
@@ -62,7 +58,7 @@ UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
   log.debug('UserDao#findOneByGw2DisplayName => ', gw2DisplayName);
   var self = this.self;
 
-  this.db.query(
+  db.query(
     'select * from users where gw2display_name = ?',
     [gw2DisplayName],
     function(err, results) {
@@ -71,7 +67,10 @@ UserDao.prototype.findOneByGw2DisplayName = function(gw2DisplayName, callback) {
         return;
       }
 
-      callback(null, self.buildUser(results.rows[0]));
+      var user = self.buildUser(results.rows[0]);
+      log.debug('user => ', user);
+
+      callback(null, user);
     }
   );
 };
@@ -87,7 +86,7 @@ UserDao.prototype.findOneById = function(id, callback) {
   log.debug('UserDao#findOneById => ', id);
   var self = this.self;
 
-  this.db.query(
+  db.query(
     'select * from users where id = ?',
     [id],
     function(err, results) {
@@ -96,7 +95,10 @@ UserDao.prototype.findOneById = function(id, callback) {
         return;
       }
 
-      callback(null, self.buildUser(results.rows[0]));
+      var user = self.buildUser(results.rows[0]);
+      log.debug('user => ', user);
+
+      callback(null, user);
     }
   );
 };
@@ -107,9 +109,11 @@ UserDao.prototype.findOneById = function(id, callback) {
  * @param {Sqlite3} sqlite An instance of {@link Sqlite3} for retrieving data.
  * @returns {UserDao}
  */
-exports = module.exports = function(db, logger, user) {
-  log = logger;
-  return new UserDao(db, user);
+exports = module.exports = function($database, $logger) {
+  db = $database;
+  log = $logger;
+  return new UserDao();
 };
 
-exports['@require'] = ['database', 'logger', 'models/user' ];
+exports['@require'] = [ 'database', 'logger' ];
+exports['@singleton'] = true;
