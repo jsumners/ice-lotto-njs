@@ -5,7 +5,6 @@ var ioc = require('electrolyte'),
     express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    path = require('path'),
     twig = require('twig');
 
 // Configure the DI container with imports in processing order
