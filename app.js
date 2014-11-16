@@ -88,14 +88,16 @@ function setupPassport(cb) {
 
 log.debug('config => ', config);
 
-app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
-
 // Static resources should be served before we start hitting the database
 // or any other type of dynamic routes.
-// TODO: look at using another router specifically for static resources and maybe one for static admin (authed) resources
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
-app.use('/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
+var staticRouter = ioc.create('staticRouter');
+staticRouter.addRoute('/public');
+staticRouter.addNodeRoute('/bootstrap', 'bootstrap/dist');
+staticRouter.addNodeRoute('/jquery', 'jquery/dist');
+app.use(staticRouter);
+
+// Enable request logging of non-static resources
+app.use(morgan('combined')); // Basically equivalent to Apache HTTPD's access.log
 
 // Requests are passed through the app.use stuff in order. So we need to parse
 // any message bodies before we try to do anything with them.
